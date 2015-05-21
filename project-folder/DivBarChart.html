@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        div.bar {
+            display: inline-block;
+            width: 20px;
+            /*height: 75px;*/
+            margin-right: 2px;
+            background-color: teal;
+        }
+    </style>
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <title></title>
+</head>
+<body>
+    <!--  <div class="bar"></div>-->
+</body>
+
+<script>
+    var dataset = [25, 7, 5, 26, 11, 8, 25, 14, 23, 19,
+            14, 11, 22, 29, 11, 13, 12, 17, 18, 10,
+            24, 18, 25, 9, 3];
+
+    d3.select("body").selectAll("div")
+        .data(dataset)
+        .enter()
+        .append("div")
+        .attr("class", "bar")
+        .style("height", function (d) { return d * 5 + "px" });
+</script>
+</html>

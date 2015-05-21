@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Recursion Test</title>
+</head>
+
+<body>
+<script>
+    //your object
+    var obj = {
+        "id": "1",
+        "title": "Do I have the right ingredients?",
+        "text": "some brief text about ingredients",
+        "longTitle": "a longer title about ingredients",
+        "longText": "a more robust description of the ingredients",
+        "parentId": "null",
+        "parent": "null",
+        "children": [
+			{
+			    "id": "2",
+			    "title": "Purchase Ingredients.",
+			    "text": "null",
+			    "longTitle": "null",
+			    "longText": "null",
+			    "parentId": "1",
+			    "parent": "Do I have the right ingredients?",
+			    "children": "null"
+			},
+			{
+			    "id": "3",
+			    "title": "Do I have the right tools?",
+			    "text": "null",
+			    "longTitle": "null",
+			    "longText": "null",
+			    "parentId": "1",
+			    "parent": "Do I have the right ingredients?",
+			    "children": [
+					{
+					    "id": "4",
+					    "parentId": "3",
+					    "title": "Get an oven",
+					    "text": "null",
+					    "longTitle": "null",
+					    "longText": "null",
+					    "parent": "Do I have the right tools?",
+					    "children": "null"
+					},
+					{
+					    "id": "5",
+					    "parentId": "3",
+					    "title": "Purchase baking tools.",
+					    "text": "null",
+					    "longTitle": "null",
+					    "longText": "null",
+					    "parent": "Do I have the right tools?",
+					    "children": "null"
+					},
+					{
+					    "id": "6",
+					    "parentId": "3",
+					    "title": "Grease cake pan",
+					    "text": "null",
+					    "longTitle": "null",
+					    "longText": "null",
+					    "parent": "Do I have the right tools?",
+					    "children": [
+							{
+							    "id": "7",
+							    "parentId": "6",
+							    "title": "Preheat oven",
+							    "text": "null",
+							    "longTitle": "null",
+							    "longText": "null",
+							    "parent": "Grease cake pan",
+							    "children": [
+									{
+									    "id": "8",
+									    "parentId": "7",
+									    "title": "Mix ingredients",
+									    "text": "null",
+									    "longTitle": "null",
+									    "longText": "null",
+									    "parent": "Preheat oven",
+									    "children": [
+											{
+											    "id": "9",
+											    "parentId": "8",
+											    "title": "Bake Cake",
+											    "text": "null",
+											    "longTitle": "null",
+											    "longText": "null",
+											    "parent": "Mix ingredients",
+											    "children": "null"
+											}
+									    ]
+									}
+							    ]
+							}
+					    ]
+					}
+			    ]
+			}
+        ]
+    }
+    ;
+
+    //called with every property and it's value
+    function process(key, value) {
+        console.log(key + " : " + value);
+    }
+
+    function traverse(obj, func) {
+        for (var i in obj) {
+            func.apply(this, [i, obj[i]]);
+            if (obj[i] !== null && typeof (obj[i]) == "object") {
+                //going on step down in the object tree!!
+                traverse(obj[i], func);
+            }
+        }
+    };
+
+    //that's all... no magic, no bloated framework
+    traverse(obj, process);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Workflow Diagram 1</title>
+        <script type="text/javascript" src="d3/d3.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            // see this page for how to use margins 
+            // this should allow this visualization to be plugged into any size frame
+            // http://bl.ocks.org/mbostock/3019563
+
+            var margin = { top: 20, right: 10, bottom: 20, left: 10 };
+
+            var width = 500 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+            var svg = d3.select("body").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                      .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var result = [];
+            var resultChildren = [];
+            var resultParent = [];
+
+            // dataset created using error handling if the data doesn't load it will say why in the console
+            d3.json("data.json", function (error, json) {
+                if (error)
+                {
+                    console.log(error);
+                }
+                else //it worked, so continue with the visualization
+                {
+                    //var result = new Object;
+                    //var resultChildren = [];
+
+                    
+                    function find(json, itemId) {
+
+                        for (var i in json) {
+                            if (json[i] !== null && typeof (json[i]) == "object") {
+
+                                if (json[i].id == itemId) {
+                                    result.push(json[i]);
+                                    //console.log(result.title);
+                                };
+                                if (json[i].parentId == itemId) {
+                                    resultChildren.push(json[i]);
+                                };
+
+                                //going on step down in the object tree!!
+                                find(json[i], itemId);
+                            }
+                        }
+                    };
+
+                    function findParent(json, itemId) { //TODO - this doesn't return the right results
+
+                        for (var i in json) {
+                            if (json[i] !== null && typeof (json[i]) == "object") {
+
+                                if (json[i].id == itemId) {
+                                    resultParent.push(json[i]);
+                                    //console.log(result.title);
+                                };
+
+                                //going on step down in the object tree!!
+                                findParent(json[i], itemId);
+                            }
+                        }
+                    };
+
+                    //that's all... no magic, no bloated framework
+                    find(json, "1");
+                    //findParent(json, result.parentId);
+
+
+                    // selected step
+                    svg.selectAll("g")
+                        .data(result)
+                        .enter()
+                        .append("rect")
+                        .attr("x", SelectedStepPosition()[0]) 
+                        .attr("y", SelectedStepPosition()[1]) 
+                        .attr("width", SelectedStepSize())
+                        .attr("height", SelectedStepSize())
+                        .attr("fill", "steelblue")
+                        .attr("onclick", "");
+
+                    svg.selectAll("g")
+                        .data(result)
+                        .enter()
+                        .append("text")
+                        .text(function (d) { return d.title; })
+                        .attr("x", SelectedStepPosition()[0] + SelectedStepSize()/2)
+                        .attr("y", SelectedStepPosition()[1] + SelectedStepSize()/2)
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "11px")
+                        .attr("fill", "white")
+                        .attr("text-anchor", "middle");
+                    
+
+                    // Children i.e. next available steps
+                    console.log("0:" + resultChildren.length);
+                    svg.selectAll("g")
+                        .data(resultChildren)
+                        .enter()
+                        .append("rect")
+                        .attr("x", function (d, i) { return ChildStepPosition(i, resultChildren.length)[0]; })  
+                        .attr("y", function (d, i) { return ChildStepPosition(i, resultChildren.length)[1]; }) 
+                        .attr("width", SelectedChildStepSize(resultChildren.length))
+                        .attr("height", SelectedChildStepSize(resultChildren.length))
+                        .attr("fill", "steelblue")
+                        .attr("onclick", "")
+                        .text(function (d) { return d.text });
+
+                    console.log("1:" + resultChildren.length);
+                    svg.selectAll("g")
+                        .data(resultChildren)
+                        .enter()
+                        .append("text")
+                        .text(function (d, i) { return d.title ; })
+                        .attr("x", function (d, i) { return ChildStepPosition(i, resultChildren.length)[0] + 5; })
+                        .attr("y", function (d, i) { return ChildStepPosition(i, resultChildren.length)[1] + 35; })
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "11px")
+                        .attr("fill", "white")
+                        .attr("text-anchor", "middle");
+
+                    console.log("2:" + resultChildren.length);
+                };
+            });
+
+           
+            // position functions
+            //TODO: these are missing the extra space needed to account for the size of the object
+            //      since the x,y indicates where the top left is, not the middle of the object
+
+            function SelectedStepPosition() {
+                //calculate the x,y coordinates of the step based on the size of the canvas
+                var x = ((width - margin.left) * (1 / 3));
+                var y = (height / 2 ) - (SelectedStepSize() / 2);
+
+                return [x, y];
+            };
+            function SelectedStepSize() {
+                w = height / (3);
+                return w;
+            };
+            function SelectedChildStepSize(count) {
+                w = height / (4 + count) ;
+                return w;
+            };
+
+            function ChildStepPosition(step, count) {
+                // calculate the x,y coordinates of the child step based
+                // on the step and the number of sibling steps (count)
+
+                // the x position isn't going to change much
+                x = (((width - margin.left) * (2 / 3)) + (((width - margin.left) * (1 / 3)) / 3));
+
+                // the y position changes based on the number of items to display
+                y =( (height / (count + 1)) * (step + 1) ) - (SelectedChildStepSize(count)/2);
+                //console.log([x,y]);
+                return [x, y];
+            };
+        </script>
+    </body>
+</html>
