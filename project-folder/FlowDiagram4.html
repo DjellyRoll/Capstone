@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+	<style>
+	iframe {
+		border: 0px;
+		background-color: white;
+		color: white;
+	}
+	body {
+		background-color: white; 
+	}
+
+</style>
+<html lang="en">
+    <head >
+        <meta charset="utf-8"/>
+        <title>Workflow Diagram 1</title>
+        <script type="text/javascript" src="d3/d3.js"></script>
+        <script type="text/javascript" src= "helper_functions.js"></script>
+        <script type="text/javascript" src= "textFlow.js"></script>
+
+    </head>
+
+    <body onload="VisualizeIt(0)">
+
+        <script type="text/javascript">
+            // see this page for how to use margins 
+            // this should allow this visualization to be plugged into any size frame
+            // http://bl.ocks.org/mbostock/3019563
+
+            var margin = { top: 10, right: 10, bottom: 10, left: 10 };
+
+            var width = 500 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+            var svg = d3.select("body").append("svg")
+                        .attr("xmlns", 'http://www.w3.org/2000/svg')
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom - 100);
+
+            // generate three groups to start to organize the elements
+            svg.append("g").attr("class", "resultParent")
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("width", (width + margin.left + margin.right) / 3);
+
+            svg.append("g").attr("class", "result")
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("width", (width + margin.left + margin.right) / 3)
+            ;
+
+            svg.append("g").attr("class", "resultChildren")
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("width", (width + margin.left + margin.right) / 3);
+
+            // generate a div and an iframe to hold the detailed information for each step
+            d3.select("body").append("div");
+            d3.select("body").append("iframe")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("src", "/project-folder/iFrameHTML/1.html");
+            
+
+
+            // create the containers that will hold the data we want to display
+            var result = [];
+            var resultChildren = [];
+            var resultParent = [];
+
+            //VisualizeIt();
+            // this is the method that does all the work...it's run every time someone clicks on something
+
+            function VisualizeIt(selectedItem) {
+                // dataset created using error handling if the data doesn't load it will say why in the console
+                // the text file contains all the json for the entire tree
+                d3.json("withdrawal.txt", function (error, json) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    else //it worked, so continue with the visualization
+                    {
+
+                        result = []; //clear the array
+                        resultChildren = []; //clear the array
+
+                        // grab the result and the child steps from the data
+                        // this fills the above arrays with data 
+                        find(json, selectedItem);
+
+                        //grab the parent of the selected item to display in the left hand box
+                        resultParent = []; //clear the array
+                        // this fills the last array with data
+                        findParent(json, result[0].parentId);
+
+
+                        // PARENT step
+                        var parentStep = svg.select('.resultParent').selectAll("rect")
+                            .data(resultParent, function (d) { return d.id; });
+
+                        parentStep.enter().append("rect")
+                            .attr("x", ParentStepPosition(resultChildren.length)[0])
+                            .attr("y", ParentStepPosition(resultChildren.length)[1])
+                            .attr("width", ParentStepSize(resultChildren.length))
+                            .attr("height", ParentStepSize(resultChildren.length))
+                            .attr("fill", "#003f87")
+                            .attr("onclick", "VisualizeIt(" + result[0].parentId + ")");
+
+                        parentStep.exit().remove();
+
+                        var parentStepText = svg.select('.resultParent').selectAll("g")
+                            .data(resultParent, function (d) { return d.id; });
+
+                        parentStepText
+                            .enter()
+                            .append("g")
+                            .append("foreignObject")
+                                //.attr("requiredExtensions", 'http://www.w3.org/1999/xhtml')
+                            .attr("x", ParentStepPosition(resultChildren.length)[0])
+                            .attr("y", ParentStepPosition(resultChildren.length)[1])
+                                .attr("width", ParentStepSize(resultChildren.length) - 10 + "px")
+                                .attr("height", ParentStepSize(resultChildren.length) - 10 + "px")
+                                .style("display", "table")
+                                .attr("onclick", "VisualizeIt(" + result[0].parentId + ")")
+                            .append("xhtml:div")
+                                .attr("xmlns", 'http://www.w3.org/2000/svg')
+                                .style("font-family", "Avenir,Calibri,Sans-Serif")
+                                .style("font-size", "11pt")
+                                .style("color", "white")
+                                .style("text-anchor", "middle")
+                                .style("text-align", "center")
+                                .style("display", "table-cell")
+                                .style("vertical-align", "middle")
+                                .style("position", "relative")
+                                .style("width", ParentStepSize(resultChildren.length) - 5 + "px")
+                                .style("height", ParentStepSize(resultChildren.length) - 5 + "px")
+                            .append("xhmtl:p")
+                                .text( "Back" )
+                        ;
+                        parentStepText.exit().remove();
+
+                        // CURRENT step
+                        var currentStep = svg.select(".result").selectAll("rect")
+                            .data(result, function (d) { return d.id; });
+
+                        currentStep.enter().append("rect")
+                            .attr("x", SelectedStepPosition()[0])
+                            .attr("y", SelectedStepPosition()[1])
+                            .attr("width", SelectedStepSize())
+                            .attr("height", SelectedStepSize())
+                            .attr("fill", "#003f87")
+                            .attr("onclick", "")
+                            .text(function (d) { return "id: " + d.id });
+
+                        currentStep.exit().remove();
+
+                        var currentStepText = svg.select(".result").selectAll("g")
+                                                .data(result, function (d) { return d.id; });
+                        // current step text
+                        currentStepText
+                            .enter()
+                            .append("g")
+                            .append("foreignObject")
+                                //.attr("requiredExtensions", 'http://www.w3.org/1999/xhtml')
+                                .attr("x", SelectedStepPosition()[0] + 5)
+                                .attr("y", SelectedStepPosition()[1] + 5)
+                                .attr("width", SelectedStepSize() - 10 + "px")
+                                .attr("height", SelectedStepSize() - 10  + "px")
+                                .style("display", "table")
+                            .append("xhtml:div")
+                                .attr("xmlns", 'http://www.w3.org/2000/svg')
+                                .style("font-family", "Avenir,Calibri,Sans-Serif")
+                                .style("font-size", "11pt")
+                                .style("color", "white")
+                                .style("text-anchor", "middle")
+                                .style("text-align", "center")
+                                .style("display", "table-cell")
+                                .style("vertical-align", "middle")
+                                .style("position", "relative")
+                                .style("width", SelectedStepSize() - 5 + "px")
+                                .style("height", SelectedStepSize() - 5 + "px")
+                            .append("xhmtl:p")
+                                .text(function (d) { return d.title; })
+                                ;
+
+                        currentStepText.exit().remove();
+                        
+                        // CHILDREN 
+                        // i.e. next available steps
+                        // use the ID as the key when linking the data
+                        var childrenSteps = d3.select(".resultChildren").selectAll("rect")
+                                            .data(resultChildren, function (d) { return d.id; });
+
+                        childrenSteps
+                            .enter()
+                            .append("rect")
+                            .attr("x", function (d, i) { return ChildStepPosition(i, resultChildren.length)[0]; })
+                            .attr("y", function (d, i) { return ChildStepPosition(i, resultChildren.length)[1]; })
+                            .attr("width", SelectedChildStepSize(resultChildren.length))
+                            .attr("height", SelectedChildStepSize(resultChildren.length))
+                            .attr("fill", "#003f87")
+                            .attr("onclick", function (d, i) { return 'VisualizeIt(' + d.id + ')';})
+                            .text(function (d) { return "id: " + d.id });
+
+                        childrenSteps.exit().remove();
+
+                        var childrenStepsText = svg.select(".resultChildren").selectAll("g")
+                                        .data(resultChildren, function (d) { return d.id; });
+
+                        // children steps text
+                        childrenStepsText
+                            .enter()
+                            .append("g")
+                            .append("foreignObject")
+                            //.attr("requiredExtensions", 'http://www.w3.org/1999/xhtml')
+                            .attr("x", function (d, i) { return ChildStepPosition(i, resultChildren.length)[0] + 5 ; })
+                            .attr("y", function (d, i) { return ChildStepPosition(i, resultChildren.length)[1] + 5; })
+                            .style("width", SelectedChildStepSize(resultChildren.length) - 10 + "px")
+                            .style("height", SelectedChildStepSize(resultChildren.length) - 10 + "px")
+                            .style("display", "table")
+                            .attr("onclick", function (d, i) { return 'VisualizeIt(' + d.id + ')'; })
+                        .append("xhtml:div")
+                            .attr("xmlns", 'http://www.w3.org/2000/svg')
+                            .style("font-family", "Calibri,Sans-Serif")
+                            .style("font-size", "9pt")
+                            .style("color", "white")
+                            //.style("size", "absolute")
+                            .style("text-align", "center")
+                            .style("display", "table-cell")
+                            .style("vertical-align", "middle")
+                            .style("position", "relative")
+                            .style("width", SelectedChildStepSize(resultChildren.length)  + "px")
+                            .style("height", SelectedChildStepSize(resultChildren.length)  + "px")
+                        .append("xhmtl:p")
+                            .text(function (d) { return d.asChildText; })
+                            
+                        ;
+                        
+
+                        childrenStepsText.exit().remove();
+
+                        //update the iframe with the correct detailed html
+                        d3.select("iframe").attr("src", "/project-folder/iFrameHTML/" + result[0].url);
+                    };
+                });
+
+            };
+            function find(json, itemId) {
+
+                for (var i in json) {
+                    if (json[i] !== null && typeof (json[i]) == "object") {
+
+                        if (json[i].id == itemId) {
+                            result.push(json[i]);
+                            //console.log(result.title);
+                        };
+                        if (json[i].parentId == itemId) {
+                            resultChildren.push(json[i]);
+                        };
+
+                        //going on step down in the object tree!!
+                        find(json[i], itemId);
+                    }
+                }
+            };
+
+            function findParent(json, itemId) { 
+
+                for (var i in json) {
+                    if (json[i] !== null && typeof (json[i]) == "object") {
+
+                        if (json[i].id == itemId) {
+                            resultParent.push(json[i]);
+                            //console.log(result.title);
+                        };
+
+                        //going on step down in the object tree!!
+                        findParent(json[i], itemId);
+                    }
+                }
+            };
+
+            // position functions
+            //TODO: these are missing the extra space needed to account for the size of the object
+            //      since the x,y indicates where the top left is, not the middle of the object
+
+            function SelectedStepPosition() {
+                //calculate the x,y coordinates of the step based on the size of the canvas
+                var x = ((width - margin.left) * (1 / 3));
+                var y = (height / 2 ) - (SelectedStepSize() / 2);
+
+                return [x, y];
+            };
+            function SelectedStepSize() {
+                w = height / (3);
+                return w;
+            };
+            function SelectedChildStepSize(count) {
+                w = height / (2.5 + count) ;
+                return w;
+            };
+
+            function ChildStepPosition(step, count) {
+                // calculate the x,y coordinates of the child step based
+                // on the step and the number of sibling steps (count)
+
+                // the x position isn't going to change much
+                x = (((width - margin.left) * (2 / 3)) + (((width - margin.left) * (1 / 3)) / 3));
+
+                // the y position changes based on the number of items to display
+                y =( (height / (count + 1)) * (step + 1) ) - (SelectedChildStepSize(count)/2);
+                //console.log([x,y]);
+                return [x, y];
+            };
+
+            function ParentStepPosition(childCount) {
+                //calculate the x,y coordinates of the step based on the size of the canvas
+                var x = margin.left;
+                var y = (height / 2) - (ParentStepSize(childCount) / 2);
+
+                return [x, y];
+            };
+
+            function ParentStepSize(childCount) {
+                // make the parent the same size as any children
+                if (childCount==0 || childCount == null) {
+                    w = height / (4);
+                } else {
+                    w = height / (2.5 + childCount);
+                }
+                
+                return w;
+            };
+
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,319 @@
+﻿[
+    {
+        "id": "0",
+        "title": "What if I withdraw?",
+        "asChildText": "null",
+        "url": "1.html",
+        "parentId": "null",
+        "children": [
+            {
+                "id": "1",
+                "title": "Have you received financial aid?",
+                "asChildText": "Let's begin!",
+                "url": "1.html",
+                "parentId": "0",
+                "children": [
+                    {
+                        "id": "2",
+                        "title": "Are you already on Financial Aid Probation or Plan?",
+                        "asChildText": "Yes",
+                        "url": "2.html",
+                        "parentId": "1",
+                        "children": [
+                            {
+                                "id": "4",
+                                "title": "Contact the Financial Aid Office",
+                                "asChildText": "Yes",
+                                "url": "15.html",
+                                "parentId": "2",
+                                "children": "null"
+                            },
+                            {
+                                "id": "5",
+                                "title": "Is this a complete withdrawal for the quarter",
+                                "asChildText": "No",
+                                "url": "3.html",
+                                "parentId": "2",
+                                "children": [
+                                    {
+                                        "id": "6",
+                                        "title": "Contact the Financial Aid Office",
+                                        "asChildText": "Yes",
+                                        "url": "15.html",
+                                        "parentId": "5",
+                                        "children": "null"
+                                    },
+                                    {
+                                        "id": "7",
+                                        "title": "How far into the quarter is today’s date?",
+                                        "asChildText": "No",
+                                        "url": "4.html",
+                                        "parentId": "5",
+                                        "children": [
+                                            {
+                                                "id": "8",
+                                                "title": "Will dropping courses maintain or change my enrollment status?",
+                                                "asChildText": "Today is one of the first five days of the quarter.",
+                                                "url": "5a.html",
+                                                "parentId": "7",
+                                                "children": [
+                                                    {
+                                                        "id": "11",
+                                                        "title": "The process is complete for now.",
+                                                        "asChildText": "Same",
+                                                        "url": "13.html",
+                                                        "parentId": "8",
+                                                        "children": "null"
+                                                    },
+                                                    {
+                                                        "id": "12",
+                                                        "title": "Complete revision form before deadline.",
+                                                        "asChildText": "Different",
+                                                        "url": "7.html",
+                                                        "parentId": "8",
+                                                        "children": [
+                                                            {
+                                                                "id": "13",
+                                                                "title": "Adjusted",
+                                                                "asChildText": "Yes",
+                                                                "url": "7.html",
+                                                                "parentId": "12",
+                                                                "children": "null"
+                                                            },
+                                                            {
+                                                                "id": "14",
+                                                                "title": "Past Due",
+                                                                "asChildText": "No",
+                                                                "url": "14.html",
+                                                                "parentId": "12",
+                                                                "children": "null"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "id": "9",
+                                                "title": "Will dropping courses maintain or change my enrollment status?",
+                                                "asChildText": "Today is between the sixth day of the quarter and the second Friday of the quarter.",
+                                                "url": "5a.html",
+                                                "parentId": "7",
+                                                "children": [
+                                                    {
+                                                        "id": "15",
+                                                        "title": "Maintain SAP?",
+                                                        "asChildText": "Yes",
+                                                        "url": "9.html",
+                                                        "parentId": "9",
+                                                        "children": [
+                                                            {
+                                                                "id": "17",
+                                                                "title": "End",
+                                                                "asChildText": "Yes",
+                                                                "url": "13.html",
+                                                                "parentId": "15",
+                                                                "children": "null"
+                                                            },
+                                                            {
+                                                                "id": "18",
+                                                                "title": "Are you already on Warning?",
+                                                                "asChildText": "No",
+                                                                "url": "10.html",
+                                                                "parentId": "15",
+                                                                "children": [
+                                                                    {
+                                                                        "id": "19",
+                                                                        "title": "Financial Aid Suspension",
+                                                                        "asChildText": "Yes",
+                                                                        "url": "11.html",
+                                                                        "parentId": "18",
+                                                                        "children": "null"
+                                                                    },
+                                                                    {
+                                                                        "id": "20",
+                                                                        "title": "Financial Aid Warning",
+                                                                        "asChildText": "No",
+                                                                        "url": "12.html",
+                                                                        "parentId": "18",
+                                                                        "children": "null"
+                                                                    }
+
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "id": "16",
+                                                        "title": "Complete revision form before deadline.",
+                                                        "asChildText": "No",
+                                                        "url": "2.html",
+                                                        "parentId": "9",
+                                                        "children": [
+                                                            {
+                                                                "id": "21",
+                                                                "title": "Maintain SAP",
+                                                                "asChildText": "Yes",
+                                                                "url": "7.html",
+                                                                "parentId": "16",
+                                                                "children": [
+                                                                    {
+                                                                        "id": "23",
+                                                                        "title": "End",
+                                                                        "asChildText": "Yes",
+                                                                        "url": "13.html",
+                                                                        "parentId": "21",
+                                                                        "children": "null"
+                                                                    },
+                                                                    {
+                                                                        "id": "24",
+                                                                        "title": "Were you on warning last quarter",
+                                                                        "asChildText": "No",
+                                                                        "url": "10.html",
+                                                                        "parentId": "21",
+                                                                        "children": [
+                                                                            {
+                                                                                "id": "25",
+                                                                                "title": "Financial Aid Suspension",
+                                                                                "asChildText": "Yes",
+                                                                                "url": "11.html",
+                                                                                "parentId": "24",
+                                                                                "children": "null"
+                                                                            },
+                                                                            {
+                                                                                "id": "26",
+                                                                                "title": "Financial Aid Warning",
+                                                                                "asChildText": "No",
+                                                                                "url": "12.html",
+                                                                                "parentId": "24",
+                                                                                "children": "null"
+                                                                            }
+
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "id": "22",
+                                                                "title": "Past Due",
+                                                                "asChildText": "No",
+                                                                "url": "14.html",
+                                                                "parentId": "16",
+                                                                "children": "null"
+                                                            }
+                                                        ]
+                                                    }
+
+                                                ]
+                                            },
+                                            {
+                                                "id": "10",
+                                                "title": "Will dropping courses maintain or change my enrollment status?",
+                                                "asChildText": "Today is after the second Friday of the quarter.",
+                                                "url": "5a.html",
+                                                "parentId": "7",
+                                                "children": [
+                                                    {
+                                                        "id": "27",
+                                                        "title": "Maintain SAP?",
+                                                        "asChildText": "Yes",
+                                                        "url": "9.html",
+                                                        "parentId": "10",
+                                                        "children": [
+                                                            {
+                                                                "id": "28",
+                                                                "title": "End",
+                                                                "asChildText": "Yes",
+                                                                "url": "13.html",
+                                                                "parentId": "27",
+                                                                "children": "null"
+                                                            },
+                                                            {
+                                                                "id": "29",
+                                                                "title": "Are you already on Warning?",
+                                                                "asChildText": "No",
+                                                                "url": "10.html",
+                                                                "parentId": "27",
+                                                                "children": [
+                                                                    {
+                                                                        "id": "30",
+                                                                        "title": "Financial Aid Suspension",
+                                                                        "asChildText": "Yes",
+                                                                        "url": "11.html",
+                                                                        "parentId": "29",
+                                                                        "children": "null"
+                                                                    },
+                                                                    {
+                                                                        "id": "31",
+                                                                        "title": "Financial Aid Warning",
+                                                                        "asChildText": "No",
+                                                                        "url": "12.html",
+                                                                        "parentId": "29",
+                                                                        "children": "null"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "id": "32",
+                                                        "title": "Will I maintain at least half time enrollment status?",
+                                                        "asChildText": "No",
+                                                        "url": "6.html",
+                                                        "parentId": "10",
+                                                        "children": [
+                                                            {
+                                                                "id": "33",
+                                                                "title": "Were you on Warning last quarter?",
+                                                                "asChildText": "Yes",
+                                                                "url": "7.html",
+                                                                "parentId": "32",
+                                                                "children": [
+                                                                    {
+                                                                        "id": "35",
+                                                                        "title": "Financial Aid Suspension",
+                                                                        "asChildText": "Yes",
+                                                                        "url": "11.html",
+                                                                        "parentId": "33",
+                                                                        "children": "null"
+                                                                    },
+                                                                    {
+                                                                        "id": "36",
+                                                                        "title": "Financial Aid Warning",
+                                                                        "asChildText": "No",
+                                                                        "url": "12.html",
+                                                                        "parentId": "33",
+                                                                        "children": "null"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "id": "34",
+                                                                "title": "Contact the Financial Aid Office",
+                                                                "asChildText": "No",
+                                                                "url": "15.html",
+                                                                "parentId": "32",
+                                                                "children": "null"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "3",
+                        "title": "No, I haven't received financial aid",
+                        "asChildText": "No",
+                        "url": "13.html",
+                        "parentId": "1",
+                        "children": "null"
+                    }
+                ]
+            }
+        ]
+    }
+]
