@@ -6,7 +6,7 @@
 		color: white;
 	}
 	body {
-		background-color: white; 
+		background-color: black; 
 	}
 
 </style>
@@ -140,7 +140,7 @@
                         var parentStepLines = svg.select(".result").selectAll("path")
                                        .data( resultParent , function (d) { return d.id; });
 
-                        // children steps Lines
+                        // parent steps Lines
                         parentStepLines
                             .enter()
                             .append("path")
@@ -159,7 +159,7 @@
 
                                     return "M" + " " + startPointX + " " + startPointY + " Q " + midPointX + " " + midPointY + " " + endPointX + " " + endPointY;
                                 })
-                                .style("stroke", "blue")
+                                .style("stroke", "#0083d6")
                                 .style("stroke-width", "5")
                                 .style("fill", "none");
 
@@ -183,6 +183,7 @@
 
                         var currentStepText = svg.select(".result").selectAll("g")
                                                 .data(result, function (d) { return d.id; });
+
                         // current step text
                         currentStepText
                             .enter()
@@ -238,29 +239,20 @@
                         childrenStepsText
                             .enter()
                             .append("g")
-                            .append("foreignObject")
-                            //.attr("requiredExtensions", 'http://www.w3.org/1999/xhtml')
-                            .attr("x", function (d, i) { return ChildStepPosition(i, resultChildren.length)[0] + 5 ; })
-                            .attr("y", function (d, i) { return ChildStepPosition(i, resultChildren.length)[1] + 5; })
-                            .style("width", SelectedChildStepSize(resultChildren.length)[1] - 10 + "px")
-                            .style("height", SelectedChildStepSize(resultChildren.length)[0] - 10 + "px")
-                            .style("display", "table")
-                            .attr("onclick", function (d, i) { return 'VisualizeIt(' + d.id + ')'; })
-                        .append("xhtml:div")
-                            .attr("xmlns", 'http://www.w3.org/2000/svg')
-                            .style("font-family", "Avenir,Calibri,Sans-Serif")
-                            .style("font-size", "9pt")
-                            .style("color", "white")
-                            .style("text-anchor", "middle")
-                            .style("text-align", "center")
-                            .style("display", "table-cell")
-                            .style("vertical-align", "middle")
-                            .style("position", "relative")
-                            .style("width", SelectedChildStepSize(resultChildren.length)[1] - 5 + "px")
-                            .style("height", SelectedChildStepSize(resultChildren.length)[0] - 5 + "px")
-                        .append("xhtml:p")
-                            .text(function (d) { return d.asChildText; })
-                            
+                            .append(function (d, i) {
+                                var svgText = createSVGtext(d.asChildText
+                                                                        , ChildStepPosition(i, resultChildren.length)[0] + (SelectedChildStepSize(resultChildren.length)[1] / 2)
+                                                                        , ChildStepPosition(i, resultChildren.length)[1] + ((SelectedChildStepSize(resultChildren.length)[0] - textHeight )/ 2)
+                                                                        );
+                                console.log("textHeight: " + textHeight + ", lineCount :" + lineCount);
+                                return svgText;
+                                 })
+                            //.attr("x", function (d, i) { return ChildStepPosition(i, resultChildren.length)[0]; })
+                            //.attr("y", function (d, i) { return ChildStepPosition(i, resultChildren.length)[1] + (textHeight / 2) ; })
+                            .attr("font-family", "sans-serif")
+                            .attr("font-size", "12px")
+                            .attr("fill", "white")
+                            .attr("text-anchor", "middle");
                         ;
                         
 
@@ -294,7 +286,7 @@
 
                                     return "M" + " " + startPointX + " " + startPointY + " Q " + midPointX + " " + midPointY + " " + endPointX + " " + endPointY;
                                 })
-                                .style("stroke","blue")
+                                .style("stroke", "#0083d6")
                                 .style("stroke-width", "5")
                                 .style("fill", "none");
 
@@ -357,6 +349,7 @@
                 w = height / (3);
                 return w;
             };
+
             function SelectedChildStepSize(count) {
                 h = height / (2.5 + count) * 1;
                 w = h * 1.5;
@@ -395,7 +388,69 @@
                 return w;
             };
 
-            
+            // word wrapping in svg
+            // http://stackoverflow.com/questions/475804/svg-word-wrap-show-stopper
+            var lineCount;
+            var textHeight = 0;
+
+            function createSVGtext(caption, x, y) {
+                //  This function attempts to create a new svg "text" element, chopping 
+                //  it up into "tspan" pieces, if the caption is too long
+                //
+                var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                svgText.setAttributeNS(null, 'x', x);
+                svgText.setAttributeNS(null, 'y', y);
+                //svgText.setAttributeNS(null, 'font-size', 12);
+                //svgText.setAttributeNS(null, 'fill', '#FFFFFF');         //  White text
+                //svgText.setAttributeNS(null, 'text-anchor', 'middle');   //  Center the text
+
+                //  The following two variables should really be passed as parameters
+                var MAXIMUM_CHARS_PER_LINE = 20;
+                var LINE_HEIGHT = 16;
+
+                lineCount = 1;  //use this to keep track of the number of lines, we'll need this to offset the y later
+                                // there's at least one
+
+                
+
+                var words = caption.split(" ");
+                var line = "";
+
+                for (var n = 0; n < words.length; n++) {
+                    var testLine = line + words[n] + " ";
+                    if (testLine.length > MAXIMUM_CHARS_PER_LINE) {
+                        //  Add a new <tspan> element
+                        var svgTSpan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                        svgTSpan.setAttributeNS(null, 'x', x);
+                        svgTSpan.setAttributeNS(null, 'y', y);
+
+                        var tSpanTextNode = document.createTextNode(line);
+                        svgTSpan.appendChild(tSpanTextNode);
+                        svgText.appendChild(svgTSpan);
+
+                        line = words[n] + " ";
+                        y += LINE_HEIGHT;
+                        lineCount++;
+                    }
+                    else {
+                        line = testLine;
+                    }
+                }
+
+                var svgTSpan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                svgTSpan.setAttributeNS(null, 'x', x);
+                svgTSpan.setAttributeNS(null, 'y', y);
+
+                var tSpanTextNode = document.createTextNode(line);
+                svgTSpan.appendChild(tSpanTextNode);
+
+                svgText.appendChild(svgTSpan);
+
+                //return the total height of the lines returned
+                textHeight = lineCount * LINE_HEIGHT;
+
+                return svgText;
+            }
 
 
         </script>
